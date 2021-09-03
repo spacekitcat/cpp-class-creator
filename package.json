@@ -81,6 +81,15 @@
 						"type": "boolean",
 						"default": true,
 						"description": "Adds *#ifndef* to the .hpp buffer."
+					},
+					"cpp.creator.file.namingScheme": {
+						"type": "string",
+						"default": "CamelCase",
+						"enum": [
+							"CamelCase",
+							"KebabCase"
+						],
+						"description": "Controls the naming convention used for generated class files"
 					}
 				}
 			}
@@ -101,7 +110,12 @@
 		"glob": "^7.1.5",
 		"mocha": "^6.2.2",
 		"tslint": "^5.20.0",
-		"typescript": "^3.6.4",
+		"typescript": "^3.9.10",
 		"vscode-test": "^1.2.2"
+	},
+	"__metadata": {
+		"id": "82061314-3d2d-4d78-aeee-57cb099c76e3",
+		"publisherDisplayName": "FleeXo",
+		"publisherId": "fa241db9-22ca-480c-90a7-8c0e891311b2"
 	}
 }

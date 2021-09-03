@@ -181,6 +181,11 @@ function can_continue(res: any)
 	return true;
 }
 
+function format_kebab_case(name: String): String
+{
+	return name.replace(/[A-Z]+/g, "-$&").slice(1).toLowerCase();
+}
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
@@ -221,7 +226,11 @@ export async function activate(context: vscode.ExtensionContext) {
 					dir = vscode.workspace.rootPath as string; // if empty input, just use workspace path
 				}
 			}
-			var out = create_class(res as string, dir as string); // if setPath was neither false, null or true, it was a string, so maybe a valid path? 
+			let fileName = res as String
+			if (vscode.workspace.getConfiguration().get("cpp.creator.file.namingScheme") === 'KebabCase') {
+				fileName = format_kebab_case(fileName);
+			}
+			var out = create_class(fileName as string, dir as string); // if setPath was neither false, null or true, it was a string, so maybe a valid path? 
 																  //Create the class there
 			if (out)
 			{
