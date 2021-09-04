@@ -93,10 +93,10 @@ function get_include_name(name: string)
 	return include_name;
 }
 
-function create_hpp(name: string, dir: string)
+function create_hpp(className: string, fileName: string, dir: string)
 {
-	var hpp_buffer = create_hpp_buffer(name);
-	var hpp_name = dir+"/"+get_include_name(name);
+	var hpp_buffer = create_hpp_buffer(className);
+	var hpp_name = dir+"/"+get_include_name(fileName);
 	fs.writeFile(hpp_name, hpp_buffer, function (err)
 	{
 		if (err) {
@@ -109,18 +109,18 @@ function create_hpp(name: string, dir: string)
 	return true;
 }
 
-function create_cpp_buffer(name: string)
+function create_cpp_buffer(className: string, fileName: string)
 {
-	var hpp_name = get_include_name(name);
+	var hpp_name = get_include_name(fileName);
 	var cpp_buffer =
 	`#include "` + hpp_name + `"  
 	
-`+name+`::`+ name +`()
+`+className+`::`+ className +`()
 {
 	
 }
 	
-`+name+`::~`+ name + `()
+`+className+`::~`+ className + `()
 {
 	
 }`;
@@ -128,10 +128,10 @@ function create_cpp_buffer(name: string)
 	return cpp_buffer;
 }
 
-function create_cpp(name: string, dir: string)
+function create_cpp(className: string, fileName: string, dir: string)
 {
-	var cpp_buffer = create_cpp_buffer(name);
-	var cpp_name = dir+"/"+name + '.cpp';
+	var cpp_buffer = create_cpp_buffer(className, fileName);
+	var cpp_name = dir+"/"+fileName + '.cpp';
 	fs.writeFile(cpp_name, cpp_buffer, function (err)
 	{
 		if (err) {
@@ -143,7 +143,7 @@ function create_cpp(name: string, dir: string)
 	return true;
 }
 
-function create_class(name: string, dir: string)
+function create_class(className: string, fileName: string, dir: string)
 {
 	if (fs.existsSync(dir)) {
 		var stats = fs.lstatSync(dir);
@@ -155,8 +155,8 @@ function create_class(name: string, dir: string)
 	else
 		fs.mkdirSync(dir); // if the path doesnt exist, just create the directory
 
-	var hpp = create_hpp(name, dir);
-	var cpp = create_cpp(name, dir);
+	var hpp = create_hpp(className, fileName, dir);
+	var cpp = create_cpp(className, fileName, dir);
 
 	return (hpp && cpp);
 }
@@ -197,8 +197,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('extension.createClass', async (args) => {
 		// The code you place here will be executed every time your command is executed
 
-		var res = await create_name_input();
-			if(!can_continue(res)) return; // check for class name
+		var className = await create_name_input();
+			if(!can_continue(className)) return; // check for class name
 
 			let dir :string | undefined | boolean= vscode.workspace.getConfiguration().get("cpp.creator.setPath");
 			// If it's called via the context menu, it's gonna have the _fsPath set from where you're clicking
@@ -216,7 +216,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				dir = vscode.workspace.rootPath as string; // use workspace path
 				let createFolder: boolean | undefined = vscode.workspace.getConfiguration().get("cpp.creator.createFolder");
 				if (createFolder) // create the folder where to put the class
-					dir += "/" + res;
+					dir += "/" + className;
 			}
 			else if (dir == true)
 			{
@@ -226,19 +226,19 @@ export async function activate(context: vscode.ExtensionContext) {
 					dir = vscode.workspace.rootPath as string; // if empty input, just use workspace path
 				}
 			}
-			let fileName = res as String
+			let fileName = className as String
 			if (vscode.workspace.getConfiguration().get("cpp.creator.file.namingScheme") === 'KebabCase') {
 				fileName = format_kebab_case(fileName);
 			}
-			var out = create_class(fileName as string, dir as string); // if setPath was neither false, null or true, it was a string, so maybe a valid path? 
+			var out = create_class(className as string, fileName as string, dir as string); // if setPath was neither false, null or true, it was a string, so maybe a valid path? 
 																  //Create the class there
 			if (out)
 			{
-					vscode.window.showInformationMessage('Your Class ' + res + '  has been created!');
+					vscode.window.showInformationMessage('Your Class ' + className + '  has been created!');
 			}
 			else
 			{
-				vscode.window.showErrorMessage('Your Class ' + res + '  has been not created!');
+				vscode.window.showErrorMessage('Your Class ' + className + '  has been not created!');
 			}
 		});
 		// Display a message box to the user
