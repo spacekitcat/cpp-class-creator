@@ -84,12 +84,21 @@
 					},
 					"cpp.creator.file.namingScheme": {
 						"type": "string",
-						"default": "CamelCase",
+						"default": "PascalCase",
 						"enum": [
-							"CamelCase",
-							"KebabCase"
+							"PascalCase",
+							"kebab-case"
 						],
 						"description": "Controls the naming convention used for generated class files"
+					},
+					"cpp.creator.class.namingScheme": {
+						"type": "string",
+						"default": "PascalCase",
+						"enum": [
+							"PascalCase",
+							"kebab-case"
+						],
+						"description": "Controls the naming convention used for class name in code"
 					}
 				}
 			}
